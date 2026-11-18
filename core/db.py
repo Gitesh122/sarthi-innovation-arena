@@ -200,6 +200,12 @@ def engine() -> Engine:
                                         pool_timeout=30, future=True, creator=_pg_creator(url))
                 _engine = eng
                 _provision(eng)
+                try:  # one-time update of the old default event date
+                    with eng.begin() as c:
+                        c.execute(text("UPDATE settings SET svalue = :n WHERE skey = 'event_date' AND svalue = '2027-01-23'"),
+                                  {"n": "2026-11-26 to 2026-11-27"})
+                except Exception:  # noqa: BLE001
+                    pass
     return _engine
 
 
@@ -332,7 +338,7 @@ def _seed_core(c) -> None:
 
     for k, v in {
         "event_name": config.APP_NAME, "event_tagline": "ATL Mega Event · Nagpur Region",
-        "event_date": "2027-01-23", "event_venue": "Nagpur, Maharashtra",
+        "event_date": "2026-11-26 to 2026-11-27", "event_venue": "Nagpur, Maharashtra",
         "registration_open": "1", "leaderboard_public": "1", "show_scores_public": "1",
         "jury_locked": "0", "auto_assign_jury": "1", "max_schools": "60",
         "contact_email": "events@sarthi.example", "contact_phone": "+91 90000 00000",

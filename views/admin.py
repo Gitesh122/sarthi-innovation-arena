@@ -516,7 +516,7 @@ def settings_page() -> None:
     with a:
         with st.form("gen"):
             st.markdown("#### Event & controls")
-            vals = {k: st.text_input(lbl, db.setting(k)) for k, lbl in [("event_name", "Event name"), ("event_tagline", "Tagline"), ("event_date", "Event date (YYYY-MM-DD)"),
+            vals = {k: st.text_input(lbl, db.setting(k)) for k, lbl in [("event_name", "Event name"), ("event_tagline", "Tagline"), ("event_date", "Event date (YYYY-MM-DD, or 2026-11-26 to 2026-11-27 for two days)"),
                     ("event_venue", "Venue"), ("contact_email", "Contact email"), ("contact_phone", "Contact phone"),
                     ("public_url", "Public app URL (for QR codes, e.g. https://sarthi-arena.streamlit.app)")]}
             mx = st.number_input("Max schools (0 = unlimited)", 0, 10000, int(db.setting("max_schools", "0") or 0))

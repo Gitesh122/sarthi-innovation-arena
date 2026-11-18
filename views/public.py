@@ -41,11 +41,27 @@ def home() -> None:
     days_left = ""
     if ev_date:
         try:
-            d = datetime.strptime(ev_date, "%Y-%m-%d").replace(tzinfo=ZoneInfo(config.TIMEZONE))
-            date_txt = d.strftime("%A, %d %B %Y")
-            delta = (d - datetime.now(ZoneInfo(config.TIMEZONE))).days
-            days_left = f"{max(0, delta + 1)} days to go" if delta >= -1 else "Event concluded"
-        except ValueError:
+            parts = [p.strip() for p in ev_date.replace(",", " to ").split(" to ") if p.strip()]
+            d1 = datetime.strptime(parts[0], "%Y-%m-%d").date()
+            d2 = datetime.strptime(parts[1], "%Y-%m-%d").date() if len(parts) > 1 else d1
+            if d2 < d1:
+                d1, d2 = d2, d1
+            today = datetime.now(ZoneInfo(config.TIMEZONE)).date()
+            if d1 == d2:
+                date_txt = d1.strftime("%A, %d %B %Y")
+            elif d1.month == d2.month and d1.year == d2.year:
+                date_txt = f"{d1.strftime('%A')} & {d2.strftime('%A')}, {d1.day} & {d2.day} {d2.strftime('%B %Y')}" if (d2 - d1).days == 1 \
+                    else f"{d1.day}\u2013{d2.day} {d2.strftime('%B %Y')}"
+            else:
+                date_txt = f"{d1.strftime('%d %b %Y')} \u2013 {d2.strftime('%d %b %Y')}"
+            if today < d1:
+                n = (d1 - today).days
+                days_left = "Starts tomorrow" if n == 1 else f"{n} days to go"
+            elif today <= d2:
+                days_left = f"Happening now \u00b7 Day {(today - d1).days + 1} of {(d2 - d1).days + 1}"
+            else:
+                days_left = "Event concluded"
+        except (ValueError, IndexError):
             date_txt = ev_date
     st.markdown(f"""
     <div class="sia-hero">
