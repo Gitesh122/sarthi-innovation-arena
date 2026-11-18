@@ -1,0 +1,5 @@
+data/*.sqlite*
+data/_backup.sqlite
+.streamlit/secrets.toml
+__pycache__/
+*.pyc
